@@ -7,8 +7,23 @@ from pathlib import Path
 
 class ObjectDetectionEval:
     def __init__(self, true_dir, pred_dir, labels, iou_thresh=0.5):
+		"""Initialize labels and the ground truth and predictions to list of all images.
+		
+		Parameters
+			true_dir : string
+				The path containing the txt files of ground truth.
+			
+			pred_dir : string
+				The path containing the txt files of predictions.
+			
+			labels : 1d array (string)
+				Contains the label names.
+		"""
+		
         self._label_count = len(labels)
         self._labels = labels
+		
+		# +1 is for `none` column
         self._confusion_matrix = np.zeros((self._label_count+1, self._label_count+1), dtype=int)
         self._iou_thresh = iou_thresh
 
@@ -16,12 +31,12 @@ class ObjectDetectionEval:
         self._multi_bboxes_true = []
         self._multi_bboxes_pred = []
 
-        # browse true txt files
+        # Browse ground truth txt files
         for file_path in glob.iglob(f"{true_dir}/*.txt"):
             bboxes_true = []
             bboxes_pred = []
             
-            # parse true txt files
+            # Parse ground truth txt files
             with open(file_path) as file:
                 for line in file:
                     xmin, ymin, xmax, ymax, label_id = line.split() 
@@ -29,7 +44,7 @@ class ObjectDetectionEval:
             file_name = Path(file_path).name
 
             # TODO: check pred file first if it exist
-            # load pred txt file based on the file name
+            # Load prediction txt file based on the file name
             with open(Path(pred_dir, file_name)) as file:
                 for line in file:
                     xmin, ymin, xmax, ymax, label_id = line.split() 
@@ -39,8 +54,19 @@ class ObjectDetectionEval:
             self._multi_bboxes_pred.append(bboxes_pred)
 
 
-    # For single image
     def confusion_matrix_single(self, bboxes_true, bboxes_pred):
+		"""Plots confusion matrix for a single image.
+		
+		Parameters
+			bboxes_true : 2d array
+				Ground truth with bounding box and label id.
+				
+			bboxes_pred : 2d array
+				Prediction with bounding box and label id.
+				
+		Returns
+			cf : label_count * label_count array
+		"""
         cf = np.zeros((self._label_count+1, self._label_count+1), dtype=int)
         
         bboxes_true = np.array(bboxes_true)
@@ -100,8 +126,10 @@ class ObjectDetectionEval:
 
         return cf
 
-
+	
     def confusion_matrix(self):
+		"""Accumulate confusion matrices of all images and print."""
+		
         for bboxes_true, bboxes_pred in zip(self._multi_bboxes_true, self._multi_bboxes_pred):
             self._confusion_matrix += self.confusion_matrix_single(bboxes_true, bboxes_pred)
 
@@ -109,9 +137,6 @@ class ObjectDetectionEval:
         labels = [l for l in self._labels]
         labels.append("None")
         labels.append("Total")
-        #labels = label_top
-        #label_top.insert(0, "TRUE")
-        print("        predictions")
         print("true     ", end="")    
         for l in labels:
             print(f"{l:<10}", end="")
@@ -126,7 +151,7 @@ class ObjectDetectionEval:
             print(f"{total_row:<10}")
 
         # Total col
-        print("\nTotal     ", end="")
+        print("Total     ", end="")
         total_col = np.sum(self._confusion_matrix, axis=0)
         for col in total_col:
                 print(f"{col:<10}", end="")
@@ -134,6 +159,8 @@ class ObjectDetectionEval:
 
 
     def classification_report(self):
+		"""Calculates precision, recall and f1-score of all labels."""
+		
         tp = np.zeros((self._label_count,), dtype=int)
         fp = np.zeros((self._label_count,), dtype=int)
         fn = np.zeros((self._label_count,), dtype=int)
@@ -169,10 +196,31 @@ class ObjectDetectionEval:
         for i in range(self._label_count):
             print(f"{self._labels[i]:<10}{precisions[i]:<10.2f}{recalls[i]:<10.2f}{f1_scores[i]:<10.2f}")
 
-    # helper
+	# TODO
+	def mean_average_precision(type):
+		"""Calculate mean Average Precision
+		Parameters
+			type : string
+				Whether PASCAL VOC, COCO etc.
+			
+		Returns
+			map : float
+		"""	
+		pass
+	
+	# Helper
     @staticmethod
     def get_iou(bbox_true, bbox_pred):
-        ixmin = max(bbox_pred[0], bbox_true[0])
+        """ Get intersection over union value.
+		
+		Parameters
+			bbox_true : 1d array
+			bbox_pred : 1d array
+			
+		Returns
+			iou : float
+		"""
+		ixmin = max(bbox_pred[0], bbox_true[0])
         iymin = max(bbox_pred[1], bbox_true[1])
         ixmax = min(bbox_pred[2], bbox_true[2])	
         iymax = min(bbox_pred[3], bbox_true[3])
