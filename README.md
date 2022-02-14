@@ -1,4 +1,4 @@
-# Object detection evaluation metricsem
+# Object detection evaluation metrics
 ## Current features
 - [x] Confusion matrix
 - [x] Precision
@@ -42,3 +42,6 @@ Total     3         1         3
 cat       1.00      0.33      0.50
 dog       0.25      1.00      0.40
 ```
+
+## Author
+- Louis Philippe Facun
