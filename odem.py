@@ -1,3 +1,6 @@
+# Author:
+# Louis Philippe Facun (louisfacun@gmail.com)
+
 import numpy as np
 import glob
 from pathlib import Path
