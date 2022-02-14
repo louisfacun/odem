@@ -1,11 +1,17 @@
 # Object detection evaluation metrics
+## Table of contents
+- [Prerequisites](#prerequisites)
+- [How to use](#how-to-use)
+- [Author](#author)
 ## Current features
 - [x] Confusion matrix
 - [x] Precision
 - [x] Recall
 - [x] F1 Score
 - [ ] mAP (COCO, Pascal voc etc.)
-
+## Prerequisites
+- Python
+- Numpy `pip install numpy`
 ## How to use
 **Prepare ground truth and prediction files**
 - Each "image" should have separate text files.
@@ -20,7 +26,7 @@
 1 2 3 4 1
 1 2 3 4 1
 ```
-Example code
+**Example code**
 ```
 >>> from pathlib import Path
 >>> from odem import ObjectDetectionEval
