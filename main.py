@@ -1,3 +1,6 @@
+# Author:
+# Louis Philippe Facun (louisfacun@gmail.com)
+
 from pathlib import Path
 from odem import ObjectDetectionEval
 
