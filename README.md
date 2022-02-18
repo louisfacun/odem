@@ -10,7 +10,7 @@
 - [x] F1 Score
 - [ ] mAP (COCO, Pascal voc etc.)
 ## Prerequisites
-- Python
+- Python 3.7+
 - Numpy `pip install numpy`
 ## How to use
 **Prepare ground truth and prediction files**
